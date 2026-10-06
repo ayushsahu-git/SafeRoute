@@ -598,15 +598,25 @@ export default function LeafletMapView({
     measurePointsRef.current = measurePoints;
   }, [measurePoints]);
 
-  const tileLayers = useMemo(() => ({
-    default: theme === 'dark'
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    terrain: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    cycling: 'https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-    navigation: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-  }), [theme]);
+  const cartoKey = import.meta.env.VITE_CARTO_API_KEY;
+
+const tileLayers = useMemo(() => ({
+  default: theme === 'dark'
+    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`
+    : `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`,
+
+  satellite:
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+
+  terrain:
+    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+
+  cycling:
+    'https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+
+  navigation:
+    `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`
+}), [theme, cartoKey]);
 
   const routePositions = useMemo(() => {
     if (!routeData || !routeData.geometry || !routeData.geometry.coordinates) return [];
